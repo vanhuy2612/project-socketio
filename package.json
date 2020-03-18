@@ -1,0 +1,23 @@
+{
+  "name": "project-socketio",
+  "version": "1.0.0",
+  "description": "Socket chatbox",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vanhuy2612/project-socketio.git"
+  },
+  "author": "Huy Dinh",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vanhuy2612/project-socketio/issues"
+  },
+  "homepage": "https://github.com/vanhuy2612/project-socketio#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
