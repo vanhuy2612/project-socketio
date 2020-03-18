@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -18,6 +18,10 @@
   },
   "homepage": "https://github.com/vanhuy2612/project-socketio#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "express-hbs": "^2.3.1",
+    "hbs": "^4.1.0",
+    "nodemon": "^2.0.2",
+    "socket.io": "^2.3.0"
   }
 }
