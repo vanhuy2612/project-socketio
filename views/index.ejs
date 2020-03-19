@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+
+    <style>
+        #user {
+            background-color: salmon;
+            color: black;
+            background-attachment: fixed;
+            border-radius: 8px;
+        }
+        #room {
+            font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+            font-size: medium;
+        }
+        .person {
+            color : white;
+            background-color: rgb(106, 106, 214);
+            float: right;
+            border-radius: 8px;
+        }
+        .other {
+            background-color: gray;
+            float: left;
+            border-radius: 8px;
+        }
+        #formChat {
+            background-attachment: fixed;
+            background-position: bottom;
+        }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let socket = io("http://192.168.6.33:3000");
+        // list user on socket
+        // socket.on("list-user", function(users){
+        //     let element = "";
+        //     users.forEach(user => {               
+        //        element += "<div class='user'>"+ user.name+ "</div>";
+        //        $('#user').html(element);
+        //     });
+        // })
+         
+        socket.on("server-send-person-to-all", (data) => {
+            let element = "";
+            if(data.sender.id == socket.id) element = "<div class='person'>"+data.sender.name+"-"+data.message+"</div><br>";
+            else element = "<div class='other'>"+data.sender.name+"-"+data.message+"</div><br>";
+            $('#room').append(element);
+        })
+        // list user on room :
+        socket.on('list-user-of-room', (users) => {
+            let element = "";
+            users.forEach(user => {               
+               element += "<div class='user'>"+ user.name+ "</div>";
+               $('#user').html(element);
+            });
+        })
+        $(document).ready( function(){
+           $('#login').show();
+           $("#chat").hide();
+           $('.joinroom').hide();
+           // client join room:
+           $('#joinroom').click(function(){
+            $('.joinroom').show();
+           })
+           $('.join').click( function(){
+               let nameroom = $("#nameroom").val();
+               let data = {
+                   sender: {
+                       id: socket.id,
+                       name: socket.name
+                   },
+                   nameroom: nameroom
+               }
+               socket.emit('join-room', data);
+               $('.joinroom').hide();
+           })
+            // client login    
+            $('.login').click( function() {
+                $('#login').hide();
+                $("#chat").show();
+                
+                let nameUser = $('.nameUser').val();
+                socket.name = nameUser;
+                let user = {
+                    id: socket.id,
+                    name: socket.name
+                }
+                socket.emit("client-login", user);
+                $('#nameUser').html("Xin chao,"+ nameUser);
+            })
+            // client chat world:
+            $('#send').click( function(){
+                let message = $('#chatField').val();
+                let data = {
+                    sender: {
+                        id: socket.id,
+                        name: socket.name
+                    },
+                    message: message
+                }
+                socket.emit('person-to-all', data);
+                //socket.emit('person-to-room', data);
+            })
+        })
+    </script>
+    <title>Trang chu</title>
+</head>
+<body>
+    <div id='login' class="container" >
+        <input class="nameUser" type="text" placeholder="Your name">
+        <button class="login">Login</button>
+    </div>
+    <div id="chat" class="container" style="background-color: wheat;">
+        <div id="nameUser" style="background-attachment: fixed;"></div>
+        <div>
+            Tìm phòng
+            <button id="joinroom"><i class="fa fa-plus-circle"></i></button>
+            <div class="joinroom">
+                <input type="text" name="" id="nameroom" placeholder="name-room">
+                <button class="join">join room</button>
+            </div>
+        </div>
+        <div class="row">
+            <div id="user" class="col col-4" style="background-attachment: fixed;">
+
+            </div>
+            <div id="room" class="col col-6">
+
+            </div>
+        </div>
+        <div id="formChat">
+            <input type="text" name="" id="chatField">
+            <button id="send">Send</button>
+        </div>
+    </div>
+</body>
+</html>
