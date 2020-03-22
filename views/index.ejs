@@ -39,7 +39,7 @@
     </style>
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        let socket = io("http://192.168.6.33:3000");
+        let socket = io("http://localhost:3000");
         // list user on socket
         // socket.on("list-user", function(users){
         //     let element = "";
@@ -50,6 +50,12 @@
         // })
          
         socket.on("server-send-person-to-all", (data) => {
+            let element = "";
+            if(data.sender.id == socket.id) element = "<div class='person'>"+data.sender.name+"-"+data.message+"</div><br>";
+            else element = "<div class='other'>"+data.sender.name+"-"+data.message+"</div><br>";
+            $('#room').append(element);
+        })
+        socket.on("server-send-person-to-room", (data) => {
             let element = "";
             if(data.sender.id == socket.id) element = "<div class='person'>"+data.sender.name+"-"+data.message+"</div><br>";
             else element = "<div class='other'>"+data.sender.name+"-"+data.message+"</div><br>";
@@ -73,12 +79,13 @@
            })
            $('.join').click( function(){
                let nameroom = $("#nameroom").val();
+               socket.nameroom = nameroom;
                let data = {
                    sender: {
                        id: socket.id,
                        name: socket.name
                    },
-                   nameroom: nameroom
+                   nameroom: socket.nameroom
                }
                socket.emit('join-room', data);
                $('.joinroom').hide();
@@ -105,10 +112,12 @@
                         id: socket.id,
                         name: socket.name
                     },
+                    nameroom: socket.nameroom,
                     message: message
                 }
-                socket.emit('person-to-all', data);
-                //socket.emit('person-to-room', data);
+                //socket.emit('person-to-all', data);
+                socket.emit('person-to-room', data);
+                $('#chatField').val("");
             })
         })
     </script>

@@ -57,7 +57,9 @@ io.on('connection', socket => {
       });
       
     })
-    //socket.on('person-to-room', )
+    socket.on('person-to-room', (data) => {
+      io.to(data.nameroom).emit("server-send-person-to-room", data);
+    })
     socket.on('person-to-all', (data) => {
       io.emit('server-send-person-to-all', (data))
     })
